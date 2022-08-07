@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include "linkedList.h"
 struct student
 {
 	std::string name;
@@ -37,6 +38,24 @@ struct student
 
 */
 
-std::string getStudentToString(student* student) {
-	return student->name + " " + std::to_string(student->age) + " " + student->section;
+std::string getStudentToString(student student) {
+	return student.name + " " + std::to_string(student.age) + " " + student.section;
 }
+
+
+
+int SortByAge(student* student1, student* student2) {
+	if (student1->age < student2->age)
+	{
+		return -1;
+	}
+	else if (student1->age > student2->age)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
