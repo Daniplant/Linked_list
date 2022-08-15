@@ -38,18 +38,18 @@ struct student
 
 */
 
-std::string getStudentToString(student student) {
+std::string getStudentToString(const student &student) {
 	return student.name + " " + std::to_string(student.age) + " " + student.section;
 }
 
 
 
-int SortByAge(student* student1, student* student2) {
-	if (student1->age < student2->age)
+int SortByAge(const student& student1, const student& student2) {
+	if (student1.age < student2.age)
 	{
 		return -1;
 	}
-	else if (student1->age > student2->age)
+	else if (student1.age > student2.age)
 	{
 		return 1;
 	}

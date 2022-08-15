@@ -9,7 +9,6 @@ private:
 	{
 		T value = value;
 		dataStruct* next = nullptr;
-
 	};
 public:
 
@@ -109,7 +108,7 @@ public:
 	T* get(unsigned int pos) {
 		// per trovare ciò che hai inserito in modo user-friendly.
 		// Se so che la logica è "firts-in last-out" allora devo fare così
-		// int i = 0 
+		// int i = 0  
 		int i = this->size - pos;
 		arrayList::dataStruct* tmp = head;
 		
@@ -158,7 +157,7 @@ public:
 		std::cout << output << std::endl;
 	}
 
-	void printList(std::string(*getData)(T)) {
+	void printList(std::string(*getData)(const T&)) {
 		// read student.h 
 		std::string output;
 		arrayList::dataStruct* tmp = this->head;
@@ -181,8 +180,8 @@ public:
 					sinistra	 uguali		destra
 
 			*/
-	void sort(int (*criteria)(T*,T*), bool ascension = false) {
-
+	void sort(int (*criteria)(const T&,const T&), bool ascension = false) {
+		// n = size of the list
 		int ascendValue = -1;
 		if (ascension)
 		{
@@ -192,19 +191,26 @@ public:
 		for (int i = 0; i < this->size; i++)
 		{
 			for (int j = 0; j < this->size - i - 1; j++) {
-				// if x < y (tutti gli elementi andranno a sinistra)
-				if (criteria(this->get(j), this->get(j + 1)) == ascendValue) {
+
+				T* selectNode = this->get(j);
+				T* nextNode = this->get(j + 1);
+				if (criteria(*selectNode, *nextNode) == ascendValue) {
 				
-					auto tmpValue = *this->get(j);
-					this->modify(j, *this->get(j + 1));
-					this->modify(j + 1, tmpValue);
+					T tmpNode = *selectNode;
+					*selectNode = *nextNode;
+					*nextNode = tmpNode;
 				}
 			}
 		}
+		// O(n*n(n*n))
+		//		n * n (n^2)
+		//		2 * n ^ 2
+		//		2n^2
+		// O(2n^2)
 	}
 
 	// sorting by using lambda functions
-	void sort(std::function<int(T*, T*)> lambdaCriteria, bool ascension = false) {
+	void sort(std::function<int(const T&, const T&)> lambdaCriteria, bool ascension = false) {
 		int ascendValue = -1;
 		if (ascension)
 		{
@@ -214,7 +220,7 @@ public:
 		for (int i = 0; i < this->size; i++)
 		{
 			for (int j = 0; j < this->size - i - 1; j++) {
-				if (lambdaCriteria(this->get(j), this->get(j + 1)) == ascendValue) {
+				if (lambdaCriteria(*this->get(j), *this->get(j + 1)) == ascendValue) {
 
 					auto tmpValue = *this->get(j);
 					this->modify(j, *this->get(j + 1));

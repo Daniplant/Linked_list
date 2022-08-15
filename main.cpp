@@ -74,12 +74,12 @@ int main()
 	printf("Bubble sort di una lista di interi usando una funzione lambda");
 	std::cin.get();
 
-	std::function<int(int*, int*)> intSort = [](int* x, int* y) {
-		if (*x < *y)
+	std::function<int(const int&, const int&)> intSort = [](const int &x,const int &y) {
+		if (x < y)
 		{
 			return -1;
 		}
-		else if (*x > *y)
+		else if (x > y)
 		{
 			return 1;
 		}
