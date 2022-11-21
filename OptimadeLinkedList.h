@@ -1,10 +1,14 @@
 #pragma once
+
+
+#pragma once
 #include <string>
 #include <functional>
 #include <vector>
+#include "dynamicArray.h"
 
 template<class T>
-class arrayList
+class OptimazedArrayList
 {
 public:
 	struct dataStruct
@@ -14,13 +18,13 @@ public:
 	};
 public:
 
-	arrayList() {
+	OptimazedArrayList() {
 		this->head = nullptr;
 		this->valueArray = nullptr;
 		this->size = 0;
 	}
 
-	arrayList(arrayList& other) {
+	OptimazedArrayList(OptimazedArrayList& other) {
 		// Deep copy
 		for (unsigned int i = 0; i < other.getSize(); i++)
 		{
@@ -28,7 +32,7 @@ public:
 		}
 	}
 
-	arrayList(arrayList&& other) noexcept{
+	OptimazedArrayList(OptimazedArrayList&& other) noexcept {
 		// Move costructor
 		this->head = other.head;
 		this->size = other.size;
@@ -42,58 +46,44 @@ public:
 	}
 
 	void add(const T& value) {
-	
-		arrayList::dataStruct* oldHead = head;
-		head = new arrayList::dataStruct();
+
+		OptimazedArrayList::dataStruct* oldHead = head;
+		head = new OptimazedArrayList::dataStruct();
 		head->value = value;
 		head->next = oldHead;
-		
+		this->auxilaryArray.add(&head->value);
+
+		this->size++;
+	}
+
+	void add(T* value) {
+
+		OptimazedArrayList::dataStruct* oldHead = head;
+		head = new OptimazedArrayList::dataStruct();
+		head->value = *value;
+		head->next = oldHead;
+		this->auxilaryArray.add(value);
+
 		this->size++;
 	}
 
 	void modify(unsigned int pos, T value) {
-		int i = this->size - pos;
-		arrayList::dataStruct* tmp = head;
-		while (tmp)
+		if (this->size > pos)
 		{
-			if (i == 1) {
-				tmp->value = value;
-			}
-			else
-			{
-				tmp = tmp->next;
-			}
-			i--;
+			this->auxilaryArray.modify(pos, value);
 		}
 	}
 
-	bool modifyWithRecursion(unsigned int pos, const T& value)
-	{
-		pos = this->size - pos;
-		return modifyRecursive_Aux(pos, value, head);
-	}
-private:
-	bool modifyRecursive_Aux(unsigned int pos, const T& value, arrayList::dataStruct* currentNode) {
-		if (currentNode == nullptr) return false;
-
-		if (pos == 1)
-		{
-			currentNode->value = value;
-			return true;
-		}
-
-		pos--;
-		return modifyRecursive_Aux(pos, value, currentNode->next);
-	}
 public:
 	bool remove(unsigned int pos) {
 		int i = 0;
 		bool hasBeenDeleted = false;
-		arrayList::dataStruct** list = &head;
+		OptimazedArrayList::dataStruct** list = &head;
 		while (*list)
 		{
 			if (i == pos) {
-				arrayList::dataStruct* ptrToDelete = *list;
+				this->auxilaryArray.remove(pos);
+				OptimazedArrayList::dataStruct* ptrToDelete = *list;
 				*list = ptrToDelete->next;
 				delete ptrToDelete;
 				this->size--;
@@ -109,29 +99,10 @@ public:
 	}
 
 	T* get(unsigned int pos) {
-		// per trovare ciò che hai inserito in modo user-friendly.
-		// Se so che la logica è "firts-in last-out" allora devo fare così
-		// int i = 0  
-		int i = this->size - pos;
-		arrayList::dataStruct* tmp = head;
-		
-		while (tmp)
-		{
-			if (i ==  1) {
-				return &tmp->value;
-			}
-			else
-			{
-				tmp = tmp->next;
-			}
-			i--;
-		}
-	
-
-		return nullptr;
+		return this->auxilaryArray.get(pos);
 	}
 
-	T* getRecursive(unsigned int pos, arrayList::dataStruct* start = nullptr) {
+	T* getRecursive(unsigned int pos, OptimazedArrayList::dataStruct* start = nullptr) {
 		start = (start == nullptr) ? this->head : start;
 		if (pos == 0)
 		{
@@ -149,25 +120,16 @@ public:
 	}
 
 	void printListAsBasicDataType() {
-		arrayList::dataStruct* tmp = this->head;
-		std::string output;
-
-		while (tmp)
-		{
-			output.append(std::to_string(tmp->value) + '\n');
-			tmp = tmp->next;
-		}
-		std::cout << output << std::endl;
+		this->auxilaryArray.printAsBasicDataType();
 	}
 
 	void printList(std::string(*getData)(const T&)) {
 		// read student.h 
 		std::string output;
-		arrayList::dataStruct* tmp = this->head;
-		while (tmp)
+		OptimazedArrayList::dataStruct* tmp = this->head;
+		for (unsigned int i = 0; i < this->auxilaryArray.getSize(); i++)
 		{
-			output.append(getData(tmp->value) + '\n');
-			tmp = tmp->next;
+			output.append(getData(*this->auxilaryArray.get(i)) + '\n');
 		}
 		std::cout << output << std::endl;
 	}
@@ -183,7 +145,7 @@ public:
 					sinistra	 uguali		destra
 
 			*/
-	void sort(int (*criteria)(const T&,const T&), bool ascension = false) {
+	void sort(int (*criteria)(const T&, const T&), bool ascension = false) {
 		// n = size of the list
 
 		// TODO : ottimizzare la complessita a O(nlog(n))
@@ -200,7 +162,7 @@ public:
 				T* selectNode = this->get(j);
 				T* nextNode = this->get(j + 1);
 				if (criteria(*selectNode, *nextNode) == ascendValue) {
-				
+
 					T tmpNode = *selectNode;
 					*selectNode = *nextNode;
 					*nextNode = tmpNode;
@@ -236,11 +198,12 @@ public:
 		}
 	}
 
-	private:
-		// TODO : crea un array per accedere ai dati molto più velocemente
-		T** valueArray; 
-		arrayList::dataStruct* head;
-		unsigned int size;
+private:
+	// TODO : crea un array per accedere ai dati molto più velocemente
+	T** valueArray;
+	OptimazedArrayList::dataStruct* head;
+	DynamicArray<T> auxilaryArray;
+	unsigned int size;
 };
 
 

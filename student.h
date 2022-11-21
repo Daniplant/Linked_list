@@ -4,15 +4,33 @@
 #include "linkedList.h"
 struct student
 {
+public:
 	std::string name;
 	std::string section;
 	int age;
+public:
+	student() = default;
+
+	~student() = default;
 
 	student(std::string name, std::string section, int age) {
 		this->name = name;
 		this->section = section;
 		this->age = age;
 	}
+
+	std::string getName() {
+		return this->name;
+	}
+	
+	std::string getSection() {
+		return this->section;
+	}
+
+	int getAge() {
+		return age;
+	}
+
 };
 
 /*

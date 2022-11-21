@@ -22,6 +22,9 @@
     <Filter Include="File di intestazione\arrayList">
       <UniqueIdentifier>{bb6f7917-cb7c-43df-9ef2-17fcd63c7479}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File di intestazione\dynamicArray">
+      <UniqueIdentifier>{364a9c39-b6e5-47d4-82c9-6860086dacdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -29,13 +32,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dataNode.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="student.h">
       <Filter>File di intestazione\complexDataTypes</Filter>
     </ClInclude>
     <ClInclude Include="linkedList.h">
+      <Filter>File di intestazione\arrayList</Filter>
+    </ClInclude>
+    <ClInclude Include="dynamicArray.h">
+      <Filter>File di intestazione\dynamicArray</Filter>
+    </ClInclude>
+    <ClInclude Include="OptimadeLinkedList.h">
       <Filter>File di intestazione\arrayList</Filter>
     </ClInclude>
   </ItemGroup>
